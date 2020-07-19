@@ -22,6 +22,7 @@ namespace vorpadminmenu_cl.Functions.Administration
         {
             Tick += freezeAnim;
             Tick += CreateBlips;
+            Tick += fireON;
             
 
             EventHandlers["vorp:slapback"] += new Action(SlapDone);
@@ -93,6 +94,20 @@ namespace vorpadminmenu_cl.Functions.Administration
                     Heal(args);
                 }
             }), false);
+            
+            API.RegisterCommand(GetConfig.Config["Stress"].ToString(), new Action<int, List<object>, string, string>((source, args, cl, raw) =>
+            {
+                if (args.Count == 0)
+                {
+                    Stressme();
+                }
+                else
+                {
+                    Stress(args);
+                }
+                
+                
+            }), false);
 
             if (GetUserInfo.userGroup.Contains("admin"))
             {
@@ -110,7 +125,7 @@ namespace vorpadminmenu_cl.Functions.Administration
                     FireToId(args);
                 }), false);
             }
-
+            
         }
 
         
@@ -288,7 +303,7 @@ namespace vorpadminmenu_cl.Functions.Administration
 
         public static void Reviveme()
         {
-            TriggerServerEvent("vorp:revivePlayer", 0);
+            TriggerServerEvent("vorp:reviveSelfPlayer");
         }
 
         public static void Revive(List<object> args)
@@ -302,6 +317,7 @@ namespace vorpadminmenu_cl.Functions.Administration
             Function.Call((Hash)0xC6258F41D86676E0, API.PlayerPedId(), 1, 100);
             Function.Call((Hash)0xAC2767ED8BDFAB15, API.PlayerPedId(), 100, 0);
             API.SetEntityHealth(API.PlayerPedId(), API.GetEntityMaxHealth(API.PlayerPedId(),1),0);
+            TriggerServerEvent("vorp:healSelfPlayer");
         }
 
         public static void Heal(List<object> args)
@@ -316,6 +332,17 @@ namespace vorpadminmenu_cl.Functions.Administration
             Function.Call((Hash)0xC6258F41D86676E0, API.PlayerPedId(), 1, 100);
             Function.Call((Hash)0xAC2767ED8BDFAB15, API.PlayerPedId(), 100, 0);
             API.SetEntityHealth(API.PlayerPedId(), API.GetEntityMaxHealth(API.PlayerPedId(), 1), 0);
+        }
+        
+        public static void Stressme()
+        {
+            TriggerServerEvent("vorp:stressSelfPlayer");
+        }
+
+        public static void Stress(List<object> args)
+        {
+            int idDestinatary = int.Parse(args[0].ToString());
+            TriggerServerEvent("vorp:stressPlayer", idDestinatary);
         }
     }
 }

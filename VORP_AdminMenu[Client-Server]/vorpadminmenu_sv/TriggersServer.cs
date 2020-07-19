@@ -28,10 +28,12 @@ namespace vorpadminmenu_sv
             EventHandlers["vorp:thorIDserver"] += new Action<Player, int>(ThorToId);
             EventHandlers["vorp:fireIDserver"] += new Action<Player, int>(FireToId);
 
+            EventHandlers["vorp:reviveSelfPlayer"] += new Action<Player>(ReviveSelfPlayer);
             EventHandlers["vorp:revivePlayer"] += new Action<Player, int>(RevivePlayer);
             EventHandlers["vorp:healPlayer"] += new Action<Player, int>(HealPlayer);
-
-
+            EventHandlers["vorp:healSelfPlayer"] += new Action<Player>(HealSelfPlayer);
+            EventHandlers["vorp:stressSelfPlayer"] += new Action<Player>(StressSelfPlayer);
+            EventHandlers["vorp:stressPlayer"] += new Action<Player, int>(StressPlayer);
 
         }
 
@@ -113,20 +115,25 @@ namespace vorpadminmenu_sv
             TriggerClientEvent(p, "vorp:fireIDdone");
         }
 
-        private void RevivePlayer([FromSource]Player player, int idDestinatary)
+        private void ReviveSelfPlayer([FromSource] Player player)
         {
-            if(idDestinatary == 0)
-            {
-                TriggerClientEvent(player, "vorp:resurrectPlayer");
-            }
-            else
-            {
-                PlayerList pl = new PlayerList();
-                Player p = pl[idDestinatary];
-                if (p == player)
-                    TriggerClientEvent(p, "vorp:resurrectPlayer");
-            }
+            TriggerClientEvent(player, "vorp:resurrectPlayer");
         }
+        
+        private void RevivePlayer([FromSource] Player player, int idDestinatary)
+        {
+            PlayerList pl = new PlayerList();
+            Player p = pl[idDestinatary];
+            TriggerClientEvent(p, "vorp:resurrectPlayer");
+        }
+
+        private void HealSelfPlayer([FromSource]Player player)
+        {
+            player.TriggerEvent("vorpmetabolism:setValue", "Thirst", 1000);
+            player.TriggerEvent("vorpmetabolism:setValue", "Hunger", 1000);
+        }
+        
+        
 
         private void HealPlayer([FromSource]Player player, int idDestinatary)
         {
@@ -135,6 +142,18 @@ namespace vorpadminmenu_sv
             p.TriggerEvent("vorpmetabolism:setValue", "Thirst", 1000);
             p.TriggerEvent("vorpmetabolism:setValue", "Hunger", 1000);
             p.TriggerEvent("vorp:healDone");
+        }
+        
+        private void StressSelfPlayer([FromSource]Player player)
+        {
+            player.TriggerEvent("vorpmetabolism:setValue", "Stress", 0);
+        }
+        
+        private void StressPlayer([FromSource]Player player, int idDestinatary)
+        {
+            PlayerList pl = new PlayerList();
+            Player p = pl[idDestinatary];
+            p.TriggerEvent("vorpmetabolism:setValue", "Stress", 0);
         }
     }
 }

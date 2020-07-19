@@ -15,6 +15,7 @@
   "SpectateOff": "soff",
   "Revive": "revive",
   "Heal": "heal",
+  "Stress": "stress",
 
   //Comands booster side
   "Golden": "golden",
